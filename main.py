@@ -6,6 +6,7 @@ from typing import List
 import strawberry
 from fastapi import HTTPException
 from sqlmodel import Session, select
+from strawberry.fastapi import GraphQLRouter
 
 from util import get_nearest_stops, get_routes_between_stops, get_next_buses
 
@@ -128,5 +129,7 @@ class Query:
             top5_buses = get_next_buses(session, route_candidates, time)
             return top5_buses
 
-
+schema = strawberry.Schema(query=Query)
+graphql_router = GraphQLRouter(schema)
 app = FastAPI()
+app.include_router(graphql_router, prefix="/api")
